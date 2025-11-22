@@ -14,13 +14,8 @@ public partial class EscanearProductoPage : ContentPage
 	public EscanearProductoPage(VentaDbContext context)
 	{
 		InitializeComponent();
-        cameraView.BarCodeOptions = new Camera.MAUI.ZXingHelper.BarcodeDecodeOptions()
-        {
-            TryHarder = true,
-            PossibleFormats = { ZXing.BarcodeFormat.All_1D }
-        };
-        _context = context;
-    }
+		_context = context;
+	}
 
     private void cameraView_CamerasLoaded(object sender, EventArgs e)
     {
@@ -36,27 +31,35 @@ public partial class EscanearProductoPage : ContentPage
         }
     }
 
-    private async void cameraView_BarcodeDetected(object sender, Camera.MAUI.ZXingHelper.BarcodeEventArgs args)
+    private async void cameraView_BarcodeDetected(object sender, object args)
     {
-        MainThread.BeginInvokeOnMainThread(async () =>
+        dynamic ev = args;
+        try
         {
-            string codigo = args.Result[0].Text;
+            string codigo = ev.Result[0].Text;
             Producto dbProducto = await _context.Productos.Include(c => c.RefCategoria).FirstOrDefaultAsync(p => p.Codigo == codigo);
-            ProductoDTO producto = new ProductoDTO()
+            if (dbProducto != null)
             {
-                IdProducto = dbProducto.IdProducto,
-                Codigo = dbProducto.Codigo,
-                Nombre = dbProducto.Nombre,
-                Categoria = new CategoriaDTO()
+                ProductoDTO producto = new ProductoDTO()
                 {
-                    IdCategoria = dbProducto.IdCategoria,
-                    Nombre = dbProducto.RefCategoria.Nombre
-                },
-                Cantidad = dbProducto.Cantidad,
-                Precio = dbProducto.Precio
-            };
-            WeakReferenceMessenger.Default.Send(new ProductoVentaMessage(producto));
-        });
+                    IdProducto = dbProducto.IdProducto,
+                    Codigo = dbProducto.Codigo,
+                    Nombre = dbProducto.Nombre,
+                    Categoria = new CategoriaDTO()
+                    {
+                        IdCategoria = dbProducto.IdCategoria,
+                        Nombre = dbProducto.RefCategoria.Nombre
+                    },
+                    Cantidad = dbProducto.Cantidad,
+                    Precio = dbProducto.Precio
+                };
+                WeakReferenceMessenger.Default.Send(new ProductoVentaMessage(producto));
+            }
+        }
+        catch
+        {
+            // ignore runtime differences
+        }
 
         await Shell.Current.Navigation.PopModalAsync();
     }

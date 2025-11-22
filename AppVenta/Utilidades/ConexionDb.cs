@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Devices;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
+using System.IO;
 
 namespace AppVenta.Utilidades
 {
@@ -12,19 +14,16 @@ namespace AppVenta.Utilidades
     {
         public static string DevolverRuta(string nombreBaseDatos)
         {
-            string rutaBaseDatos = string.Empty;
+            // Use MAUI FileSystem.AppDataDirectory which maps to a suitable app-specific folder on each platform
+            string appData = FileSystem.AppDataDirectory;
 
-            if (DeviceInfo.Platform == DevicePlatform.Android)
+            // Ensure directory exists
+            if (!Directory.Exists(appData))
             {
-                rutaBaseDatos = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                rutaBaseDatos = Path.Combine(rutaBaseDatos, nombreBaseDatos);
+                Directory.CreateDirectory(appData);
+            }
 
-            }
-            else if (DeviceInfo.Platform == DevicePlatform.iOS)
-            {
-                rutaBaseDatos = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                rutaBaseDatos = Path.Combine(rutaBaseDatos, "..", "Library", nombreBaseDatos);
-            }
+            string rutaBaseDatos = Path.Combine(appData, nombreBaseDatos);
 
             return rutaBaseDatos;
 

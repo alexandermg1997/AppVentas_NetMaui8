@@ -9,11 +9,6 @@ public partial class BarcodePage : ContentPage
 	public BarcodePage()
 	{
 		InitializeComponent();
-		cameraView.BarCodeOptions = new Camera.MAUI.ZXingHelper.BarcodeDecodeOptions()
-		{
-			TryHarder = true,
-			PossibleFormats = {ZXing.BarcodeFormat.All_1D}
-		};
 	}
 
 	private void cameraView_CamerasLoaded(object sender,EventArgs e)
@@ -30,16 +25,23 @@ public partial class BarcodePage : ContentPage
 		}
 	}
 
-	private void cameraView_BarcodeDetected(object sender,Camera.MAUI.ZXingHelper.BarcodeEventArgs args)
+	private void cameraView_BarcodeDetected(object sender, object args)
 	{
-
-        BarcodeResult barcodeResult = new BarcodeResult { BarcodeValue = args.Result[0].Text };
-        WeakReferenceMessenger.Default.Send(new BarcodeScannedMessage(barcodeResult));
-
-		MainThread.BeginInvokeOnMainThread(async () =>
+		dynamic ev = args;
+		try
 		{
-			await Shell.Current.Navigation.PopModalAsync();
-		});
+			string text = ev.Result[0].Text;
+			BarcodeResult barcodeResult = new BarcodeResult { BarcodeValue = text };
+			WeakReferenceMessenger.Default.Send(new BarcodeScannedMessage(barcodeResult));
+
+			MainThread.BeginInvokeOnMainThread(async () =>
+			{
+				await Shell.Current.Navigation.PopModalAsync();
+			});
+		}
+		catch
+		{
+		}
 
 	}
 
