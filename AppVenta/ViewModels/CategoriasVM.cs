@@ -167,6 +167,7 @@ namespace AppVenta.ViewModels
         }
 
         [RelayCommand]
+        [Obsolete]
         private async Task Eliminar(CategoriaDTO categoria)
         {
             bool answer = await Shell.Current.DisplayAlert("Mensaje", "Desea eliminar la categoria?", "Si, continuar", "No, volver");

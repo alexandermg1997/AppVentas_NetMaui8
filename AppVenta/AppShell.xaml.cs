@@ -10,6 +10,7 @@ namespace AppVenta
             InitializeComponent();
         }
 
+        [Obsolete]
         private async void CerrarSesion_Clicked(object sender, EventArgs e)
         {
             bool answer = await Shell.Current.DisplayAlert("Mensaje", "Desea salir?", "Si, continuar", "No, volver");

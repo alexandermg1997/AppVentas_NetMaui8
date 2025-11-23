@@ -226,6 +226,7 @@ namespace AppVenta.ViewModels
         }
 
         [RelayCommand]
+        [Obsolete]
         private async Task Eliminar(ProductoDTO producto)
         {
             bool answer = await Shell.Current.DisplayAlert("Mensaje", "Desea eliminar el producto?", "Si, continuar", "No, volver");

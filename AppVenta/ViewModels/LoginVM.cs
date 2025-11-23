@@ -17,6 +17,7 @@ namespace AppVenta.ViewModels
         public string password = string.Empty;
 
         [RelayCommand]
+        [Obsolete]
         private async Task Login()
         {
             if (Usuario == "Admin" && Password == "123")
